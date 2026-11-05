@@ -22,3 +22,20 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .7
 .mascot { display: block; width: min(37%, 150px); height: auto; margin: 0 auto .4rem; filter: drop-shadow(0 7px 6px #a6796b30); }
 @media (max-width: 760px) { main { width: min(100% - 2rem, 560px); }.top-note { display: none; }.layout { grid-template-columns: 1fr; min-height: 0; padding: 3rem 0; gap: 2.5rem; }.screen-card { transform: none; }.steps { margin-top: 2rem; } }
 @media (prefers-reduced-motion: reduce) { button { transition: none; } }
+
+/* A bolder palette inspired by Pototo's blue cap and golden eyes. */
+:root { color: #fff9e9; background: #171339; }
+body { background: radial-gradient(circle at 85% 15%, #42328c 0, transparent 38%), #171339; }
+.topbar, footer, .steps { border-color: #4d467d; }
+.logo { color: #fff9e9; }.logo span:last-child, h1 em { color: #ffca4a; }
+.top-note, .tagline, .status, .steps, footer, label { color: #dad2f5; }
+.top-note span, .eyebrow span { color: #ffca4a; }.eyebrow, .steps b, .tagline span { color: #ffb846; }
+button { color: #fff; background: #4a3c91; border-color: #7767c6; }
+button:hover { box-shadow: 0 5px 0 #241d58; }
+.primary { color: #241b37; background: #ffca4a; border-color: #ffca4a; box-shadow: 0 5px 0 #b77a18; }
+.primary:hover { box-shadow: 0 7px 0 #b77a18; }.danger { background: #b83c60; border-color: #b83c60; }
+code { background: #3a306f; color: #fff6cf; }.status-dot { background: #6be7ab; }
+.screen-card { background: #30275f; border-color: #7462ba; box-shadow: 0 20px 60px #09061f88, 0 6px 0 #0e0b29; }
+.screen-top, .screen-bottom { color: #eee6ff; }.screen-top i { background: #ff777f; }.screen-top i:nth-child(2) { background: #ffca4a; }.screen-top i:nth-child(3) { background: #6be7ab; }
+.viewer { background: #463587; border-color: #6955b0; }.placeholder { color: #f1e8ff; }.placeholder strong { color: #fff6dc; }
+.waiting { color: #ffe298; background: #292052; }.mascot { filter: drop-shadow(0 7px 8px #18103b99); }
