@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { SignalingClient, type SignalMessage } from './signaling'
 import { ScreenPeer } from './webrtc'
+import mascot from './pototo-mascot.png'
 
 const signalingUrl = import.meta.env.VITE_SIGNALING_URL || 'ws://localhost:8787'
 const existingRoomId = new URLSearchParams(window.location.search).get('room')
@@ -149,7 +150,7 @@ export default function App() {
     </section>
     <section className="screen-card" aria-label="Stream viewer"><div className="screen-top"><span><i /> <i /> <i /></span><span>THE HANGOUT</span><span>✧</span></div><div className="viewer">
       <video ref={video} autoPlay playsInline controls hidden={!hasRemoteStream} />
-      {!hasRemoteStream && <div className="placeholder"><div className="potato" aria-hidden="true">🥔<span>✦</span></div><strong>The best seat in the house</strong><p>Your friend’s screen will appear here.<br />Grab a snack while you wait!</p><span className="waiting">✧ &nbsp; WAITING FOR THE MAGIC &nbsp; ✧</span></div>}
+      {!hasRemoteStream && <div className="placeholder"><img className="mascot" src={mascot} alt="A smiling, white-haired Lalafell in a blue cap" /><strong>The best seat in the house</strong><p>Your friend’s screen will appear here.<br />Grab a snack while you wait!</p><span className="waiting">✧ &nbsp; WAITING FOR THE MAGIC &nbsp; ✧</span></div>}
     </div><div className="screen-bottom"><span>♡ &nbsp; better together</span><span>pototo-powered ✦</span></div></section></div>
     <footer><span>Made with potatoes &amp; friendship 🥔</span><span>Keep Discord for voice · Share the fun here</span></footer>
   </main>
