@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: pototo-cast-signaling
+    runtime: node
+    plan: free
+    buildCommand: npm install --include=dev
+    startCommand: npm run start --workspace server

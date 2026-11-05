@@ -65,7 +65,12 @@ export default function App() {
       if (state === 'connected') setStatus(isSharing ? 'Your screen is live.' : 'Watching the shared screen.')
       if (state === 'failed') setStatus('Connection failed. A TURN server may be needed on this network.')
     }
-    await client.connect(signalingUrl, id, (message) => void handleSignal(message))
+    try {
+      await client.connect(signalingUrl, id, (message) => void handleSignal(message))
+    } catch (error) {
+      if (signaling.current === client) cleanup()
+      throw error
+    }
     setStatus('Room ready. Waiting for the other person…')
   }
 
@@ -123,6 +128,8 @@ export default function App() {
       setIsSharing(true)
       setStatus('Screen selected. Send the link and wait for your friend to join.')
     } catch (error) {
+      screen.current?.getTracks().forEach((track) => track.stop())
+      screen.current = undefined
       setStatus(error instanceof Error ? error.message : 'Could not start screen sharing.')
     }
   }

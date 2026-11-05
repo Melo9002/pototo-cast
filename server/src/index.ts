@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from 'ws'
 type Client = WebSocket & { roomId?: string }
 const port = Number(process.env.PORT ?? 8787)
 const rooms = new Map<string, Set<Client>>()
-const wss = new WebSocketServer({ port })
+const wss = new WebSocketServer({ port, maxPayload: 65536 })
 
 function send(client: Client, message: unknown) {
   if (client.readyState === WebSocket.OPEN) client.send(JSON.stringify(message))
@@ -23,8 +23,9 @@ wss.on('connection', (client: Client) => {
   client.on('message', (raw) => {
     let message: { type?: string; roomId?: string }
     try { message = JSON.parse(raw.toString()) } catch { send(client, { type: 'error', message: 'Invalid message.' }); return }
+    if (!message || typeof message !== 'object') { send(client, { type: 'error', message: 'Invalid message.' }); return }
     if (message.type === 'join') {
-      const roomId = message.roomId?.trim()
+      const roomId = typeof message.roomId === 'string' ? message.roomId.trim() : ''
       if (!roomId || roomId.length > 64) { send(client, { type: 'error', message: 'Invalid room ID.' }); return }
       leave(client)
       const room = rooms.get(roomId) ?? new Set<Client>()
@@ -33,6 +34,7 @@ wss.on('connection', (client: Client) => {
       if (room.size === 2) room.forEach((peer) => send(peer, { type: 'peer-ready' }))
       return
     }
+    if (!['offer', 'answer', 'ice-candidate'].includes(message.type ?? '')) return
     const room = client.roomId && rooms.get(client.roomId)
     if (!room) { send(client, { type: 'error', message: 'Join a room first.' }); return }
     room.forEach((peer) => { if (peer !== client) send(peer, message) })

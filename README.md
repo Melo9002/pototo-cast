@@ -56,6 +56,12 @@ The frontend can live on GitHub Pages; the signaling server needs its own Node-c
 
 The included workflow assumes the GitHub repository is named `pototo-cast`.
 
+### Deploy signaling on Render
+
+Create a Render account and connect this GitHub repository. Choose **New → Blueprint** and select `pototo-cast`; the included `render.yaml` configures a free Node web service. Once it is live, copy its `https://...onrender.com` address and replace `https://` with `wss://`. In GitHub, open **Settings → Secrets and variables → Actions → Variables**, add `VITE_SIGNALING_URL` with that secure WebSocket address, then run the Pages workflow again from the Actions tab. The address is public configuration, not a secret.
+
+Render's free service can sleep after inactivity, so the first connection may take time. This prototype needs a single instance because rooms are held in memory. A TURN server is still optional and separate.
+
 > **Easy mode for friends:** once the GitHub Pages deployment has finished, send them your Pages address (normally `https://melo9002.github.io/pototo-cast/`). They never need Node, npm, or a download—only a modern browser. You still need to configure the signaling address first, otherwise the website cannot connect people into a room.
 
 ## A tiny but important networking note
