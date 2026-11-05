@@ -20,6 +20,7 @@ export default function App() {
   const screen = useRef<MediaStream>()
   const connectedRoom = useRef<string>()
   const peerPresent = useRef(false)
+  const pendingIce = useRef<RTCIceCandidateInit[]>([])
 
   const roomUrl = roomId ? `${window.location.origin}${window.location.pathname}?room=${roomId}` : ''
 
@@ -32,18 +33,24 @@ export default function App() {
     signaling.current = undefined
     connectedRoom.current = undefined
     peerPresent.current = false
+    pendingIce.current = []
     setIsSharing(false)
+    setHasRemoteStream(false)
+    if (video.current) video.current.srcObject = null
   }
 
-  useEffect(() => () => cleanup(), [])
+  useEffect(() => {
+    if (existingRoomId) void ensureConnected(existingRoomId).catch(() => setStatus('Could not reach the signaling server.'))
+    return () => cleanup()
+  }, [])
 
   const ensureConnected = async (id: string) => {
     if (connectedRoom.current === id) return
     cleanup()
     const client = new SignalingClient()
     const connection = new ScreenPeer((stream) => {
-      if (video.current) video.current.srcObject = stream
       setHasRemoteStream(true)
+      if (video.current) video.current.srcObject = stream
       setStatus('Watching the shared screen.')
     })
     signaling.current = client
@@ -73,10 +80,17 @@ export default function App() {
     }
     if (message.type === 'offer') {
       const sdp = await connection.acceptOffer(message.sdp)
+      for (const candidate of pendingIce.current.splice(0)) await connection.addIceCandidate(candidate)
       signaling.current?.send({ type: 'answer', sdp })
     }
-    if (message.type === 'answer') await connection.acceptAnswer(message.sdp)
-    if (message.type === 'ice-candidate') await connection.addIceCandidate(message.candidate)
+    if (message.type === 'answer') {
+      await connection.acceptAnswer(message.sdp)
+      for (const candidate of pendingIce.current.splice(0)) await connection.addIceCandidate(candidate)
+    }
+    if (message.type === 'ice-candidate') {
+      if (connection.connection.remoteDescription) await connection.addIceCandidate(message.candidate)
+      else pendingIce.current.push(message.candidate)
+    }
     if (message.type === 'peer-left') setStatus('The other person left the room.')
     if (message.type === 'room-full' || message.type === 'error') setStatus(message.type === 'error' ? message.message : 'This room already has two people.')
   }
@@ -85,7 +99,7 @@ export default function App() {
     const id = newRoomId()
     window.history.replaceState({}, '', `?room=${id}`)
     setRoomId(id)
-    void ensureConnected(id)
+    void ensureConnected(id).catch(() => setStatus('Could not reach the signaling server.'))
   }
 
   const startSharing = async () => {
@@ -95,9 +109,10 @@ export default function App() {
       setRoomId(id)
     }
     try {
-      await ensureConnected(id)
+      const connecting = ensureConnected(id)
       const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
       screen.current = stream
+      await connecting
       peer.current?.addScreen(stream)
       if (peerPresent.current) {
         const sdp = await peer.current!.createOffer()
@@ -130,7 +145,8 @@ export default function App() {
       <p className="status" aria-live="polite">{status}</p>
     </section>
     <section className="viewer">
-      {hasRemoteStream ? <video ref={video} autoPlay playsInline controls /> : <div className="placeholder">Your friend’s screen will appear here.</div>}
+      <video ref={video} autoPlay playsInline controls hidden={!hasRemoteStream} />
+      {!hasRemoteStream && <div className="placeholder">Your friend’s screen will appear here.</div>}
     </section>
     <footer>Video stays between browsers when possible. Use Discord for voice.</footer>
   </main>
