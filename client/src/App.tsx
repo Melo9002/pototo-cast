@@ -132,22 +132,25 @@ export default function App() {
   }
 
   return <main>
-    <section className="card">
-      <div className="brand"><span>🥔</span><h1>PototoCast</h1></div>
-      <p className="tagline">A tiny screen-sharing room for you and a friend.</p>
+    <header className="topbar"><a className="logo" href={window.location.pathname}><span>🥔</span> pototo<span>cast</span></a><span className="top-note">made for little hangouts <span>✦</span></span></header>
+    <div className="layout"><section className="card">
+      <p className="eyebrow"><span>✦</span> YOUR COZY CORNER OF THE INTERNET</p>
+      <h1>Good games.<br /><em>Better company.</em></h1>
+      <p className="tagline">Share your screen, bring a friend, and make yourself at home. No accounts, no fuss. <span>♡</span></p>
       {!roomId && <button className="primary" onClick={createRoom}>Create a room</button>}
       {roomId && <div className="room">
-        <label>Room <code>{roomId}</code></label>
+        <label>Your room <code>{roomId}</code></label>
         <button onClick={copyLink}>Copy invite link</button>
         {!isSharing && <button className="primary" onClick={() => void startSharing()}>Share your screen</button>}
         {isSharing && <button className="danger" onClick={cleanup}>Stop sharing</button>}
       </div>}
-      <p className="status" aria-live="polite">{status}</p>
+      <p className="status" aria-live="polite"><span className="status-dot" />{status}</p>
+      <div className="steps"><span><b>01</b> Make a room</span><span><b>02</b> Invite a friend</span><span><b>03</b> Hit play!</span></div>
     </section>
-    <section className="viewer">
+    <section className="screen-card" aria-label="Stream viewer"><div className="screen-top"><span><i /> <i /> <i /></span><span>THE HANGOUT</span><span>✧</span></div><div className="viewer">
       <video ref={video} autoPlay playsInline controls hidden={!hasRemoteStream} />
-      {!hasRemoteStream && <div className="placeholder">Your friend’s screen will appear here.</div>}
-    </section>
-    <footer>Video stays between browsers when possible. Use Discord for voice.</footer>
+      {!hasRemoteStream && <div className="placeholder"><div className="potato" aria-hidden="true">🥔<span>✦</span></div><strong>The best seat in the house</strong><p>Your friend’s screen will appear here.<br />Grab a snack while you wait!</p><span className="waiting">✧ &nbsp; WAITING FOR THE MAGIC &nbsp; ✧</span></div>}
+    </div><div className="screen-bottom"><span>♡ &nbsp; better together</span><span>pototo-powered ✦</span></div></section></div>
+    <footer><span>Made with potatoes &amp; friendship 🥔</span><span>Keep Discord for voice · Share the fun here</span></footer>
   </main>
 }
