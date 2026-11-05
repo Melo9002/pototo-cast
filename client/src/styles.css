@@ -1,0 +1,13 @@
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #f4f5ff; background: #101425; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button { border: 0; border-radius: 10px; padding: .75rem 1rem; font: inherit; font-weight: 700; color: #17182b; background: #e8e9f4; cursor: pointer; }
+button:hover { filter: brightness(.94); }
+main { width: min(960px, calc(100% - 2rem)); margin: 0 auto; padding: clamp(2rem, 7vw, 5rem) 0 2rem; }
+.card { background: #1b2140; border: 1px solid #303968; border-radius: 20px; padding: clamp(1.25rem, 4vw, 2.5rem); box-shadow: 0 24px 70px #05071166; }
+.brand { display: flex; align-items: center; gap: .7rem; } .brand span { font-size: 2rem; } h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.3rem); letter-spacing: -.06em; }
+.tagline { color: #b8c0e1; margin: .5rem 0 1.5rem; } .room { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; } label { color: #cdd3f2; margin-right: auto; } code { color: #fff; background: #0e1122; padding: .3rem .45rem; border-radius: 6px; }
+.primary { color: #101425; background: #9ef0be; } .danger { color: #fff; background: #be4e63; } .status { min-height: 1.5rem; margin: 1.5rem 0 0; color: #b8c0e1; }
+.viewer { aspect-ratio: 16 / 9; margin-top: 1.5rem; background: #080a15; border: 1px solid #303968; border-radius: 16px; overflow: hidden; display: grid; place-items: center; } video { width: 100%; height: 100%; object-fit: contain; } .placeholder { color: #8791b8; text-align: center; padding: 1rem; }
+footer { text-align: center; color: #8791b8; font-size: .9rem; margin: 1.5rem 0; }
+@media (max-width: 560px) { .room { align-items: stretch; } label { width: 100%; } .room button { flex: 1; } }
