@@ -1,4 +1,4 @@
-# PototoCast
+# pototo-cast
 
 A deliberately small, browser-to-browser screen-sharing prototype for two people. It has no accounts, database, voice chat, or media server: use Discord for voice and PototoCast for the picture.
 
@@ -37,7 +37,7 @@ VITE_SIGNALING_URL=ws://YOUR-LAN-IP:8787 npm run dev --workspace client
 3. In the GitHub repository, add an Actions variable named `VITE_SIGNALING_URL`, set to the public **`wss://`** signaling endpoint.
 4. Enable GitHub Pages using **GitHub Actions** as the source. The included workflow builds and deploys `client/dist` on each push to `main`.
 
-The Vite base path in `client/vite.config.ts` expects a project Pages URL (`https://OWNER.github.io/PototoCast/`). Change `PototoCast` there if your repository has another name, or use `/` for a custom domain.
+The Vite base path in `client/vite.config.ts` expects a project Pages URL (`https://OWNER.github.io/pototo-cast/`). Change `pototo-cast` there if your repository has another name, or use `/` for a custom domain.
 
 ## STUN, TURN, and browser/network limits
 

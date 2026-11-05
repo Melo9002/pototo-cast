@@ -1,5 +1,5 @@
 {
-  "name": "@pototocast/signaling",
+  "name": "@pototo-cast/signaling",
   "private": true,
   "version": "0.1.0",
   "type": "module",
