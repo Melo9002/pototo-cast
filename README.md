@@ -56,6 +56,8 @@ The frontend can live on GitHub Pages; the signaling server needs its own Node-c
 
 The included workflow assumes the GitHub repository is named `pototo-cast`.
 
+> **Easy mode for friends:** once the GitHub Pages deployment has finished, send them your Pages address (normally `https://melo9002.github.io/pototo-cast/`). They never need Node, npm, or a download—only a modern browser. You still need to configure the signaling address first, otherwise the website cannot connect people into a room.
+
 ## A tiny but important networking note
 
 - Production needs HTTPS for browser screen capture—GitHub Pages provides it.
