@@ -31,6 +31,7 @@ wss.on('connection', (client: Client) => {
       const room = rooms.get(roomId) ?? new Set<Client>()
       if (room.size >= 2) { send(client, { type: 'room-full' }); return }
       rooms.set(roomId, room); room.add(client); client.roomId = roomId
+      send(client, { type: 'joined' })
       if (room.size === 2) room.forEach((peer) => send(peer, { type: 'peer-ready' }))
       return
     }

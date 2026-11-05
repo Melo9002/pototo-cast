@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "check": "tsc --noEmit --pretty false"
+    "check": "tsc --noEmit --pretty false",
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": { "ws": "^8.18.0" },
   "devDependencies": { "tsx": "^4.19.2", "typescript": "^5.7.2", "@types/ws": "^8.5.13", "@types/node": "^22.10.2" }

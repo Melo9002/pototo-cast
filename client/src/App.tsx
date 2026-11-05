@@ -20,6 +20,7 @@ export default function App() {
   const peer = useRef<ScreenPeer>()
   const screen = useRef<MediaStream>()
   const connectedRoom = useRef<string>()
+  const connectionAttempt = useRef<Promise<void>>()
   const peerPresent = useRef(false)
   const pendingIce = useRef<RTCIceCandidateInit[]>([])
 
@@ -33,6 +34,7 @@ export default function App() {
     peer.current = undefined
     signaling.current = undefined
     connectedRoom.current = undefined
+    connectionAttempt.current = undefined
     peerPresent.current = false
     pendingIce.current = []
     setIsSharing(false)
@@ -46,7 +48,7 @@ export default function App() {
   }, [])
 
   const ensureConnected = async (id: string) => {
-    if (connectedRoom.current === id) return
+    if (connectedRoom.current === id) return connectionAttempt.current
     cleanup()
     const client = new SignalingClient()
     const connection = new ScreenPeer((stream) => {
@@ -66,7 +68,13 @@ export default function App() {
       if (state === 'failed') setStatus('Connection failed. A TURN server may be needed on this network.')
     }
     try {
-      await client.connect(signalingUrl, id, (message) => void handleSignal(message))
+      const attempt = client.connect(signalingUrl, id, (message) => {
+        void handleSignal(message).catch(() => setStatus('The connection failed. Refresh the page and try again.'))
+      }, () => {
+        if (signaling.current === client) { cleanup(); setStatus('Disconnected. Refresh the page to reconnect.') }
+      })
+      connectionAttempt.current = attempt
+      await attempt
     } catch (error) {
       if (signaling.current === client) cleanup()
       throw error
@@ -97,7 +105,7 @@ export default function App() {
       if (connection.connection.remoteDescription) await connection.addIceCandidate(message.candidate)
       else pendingIce.current.push(message.candidate)
     }
-    if (message.type === 'peer-left') setStatus('The other person left the room.')
+    if (message.type === 'peer-left') { peerPresent.current = false; setStatus('The other person left. Refresh the room before inviting them again.') }
     if (message.type === 'room-full' || message.type === 'error') setStatus(message.type === 'error' ? message.message : 'This room already has two people.')
   }
 
@@ -114,12 +122,15 @@ export default function App() {
       window.history.replaceState({}, '', `?room=${id}`)
       setRoomId(id)
     }
+    let capture: MediaStream | undefined
     try {
       const connecting = ensureConnected(id)
+      void connecting.catch(() => {})
       const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
-      screen.current = stream
+      capture = stream
       await connecting
       peer.current?.addScreen(stream)
+      screen.current = stream
       if (peerPresent.current) {
         const sdp = await peer.current!.createOffer()
         signaling.current?.send({ type: 'offer', sdp })
@@ -128,7 +139,7 @@ export default function App() {
       setIsSharing(true)
       setStatus('Screen selected. Send the link and wait for your friend to join.')
     } catch (error) {
-      screen.current?.getTracks().forEach((track) => track.stop())
+      capture?.getTracks().forEach((track) => track.stop())
       screen.current = undefined
       setStatus(error instanceof Error ? error.message : 'Could not start screen sharing.')
     }
@@ -150,7 +161,7 @@ export default function App() {
         <label>Your room <code>{roomId}</code></label>
         <button onClick={copyLink}>Copy invite link</button>
         {!isSharing && <button className="primary" onClick={() => void startSharing()}>Share your screen</button>}
-        {isSharing && <button className="danger" onClick={cleanup}>Stop sharing</button>}
+        {isSharing && <button className="danger" onClick={() => { cleanup(); setStatus('Screen sharing stopped. Refresh the room to share again.') }}>Stop sharing</button>}
       </div>}
       <p className="status" aria-live="polite"><span className="status-dot" />{status}</p>
       <div className="steps"><span><b>01</b> Make a room</span><span><b>02</b> Invite a friend</span><span><b>03</b> Hit play!</span></div>
